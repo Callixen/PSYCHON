@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSYCHON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #080808;
+    --off-black: #111111;
+    --surface: #161616;
+    --border: rgba(255,255,255,0.08);
+    --border-mid: rgba(255,255,255,0.14);
+    --white: #f5f3f0;
+    --white-dim: rgba(245,243,240,0.55);
+    --white-faint: rgba(245,243,240,0.2);
+    --accent: #e8e4de;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--serif);
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+    height: 64px;
+    background: rgba(8,8,8,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--white);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--white-dim);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 70% at 72% 40%, rgba(255,255,255,0.03) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 20% 80%, rgba(255,255,255,0.02) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-line {
+    position: absolute; top: 0; right: 120px;
+    width: 1px; height: 100%;
+    background: linear-gradient(to bottom, transparent 0%, var(--border) 30%, var(--border) 70%, transparent 100%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--white-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(52px, 8vw, 108px);
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    max-width: 900px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.35s;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--white-dim);
+  }
+  .hero-sub {
+    font-size: clamp(16px, 1.4vw, 20px);
+    font-weight: 300;
+    color: var(--white-dim);
+    max-width: 520px;
+    line-height: 1.65;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.5s;
+  }
+  .hero-actions {
+    display: flex; align-items: center; gap: 32px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.65s;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 32px;
+    background: var(--white);
+    color: var(--black);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+  .btn-secondary {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--white-dim);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-mid);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-secondary:hover { color: var(--white); border-color: var(--white-dim); }
+  .hero-code {
+    margin-top: 56px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease forwards 0.8s;
+  }
+  .code-block {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--white-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 24px;
+    letter-spacing: 0.02em;
+  }
+  .code-block span { color: var(--white-faint); margin-right: 8px; user-select: none; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 48px;
+  }
+
+  /* ── SECTION SHARED ── */
+  section { padding: 100px 48px; }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--white-faint);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 56px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1; max-width: 80px;
+    height: 1px;
+    background: var(--border-mid);
+  }
+  .section-heading {
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin-bottom: 64px;
+    max-width: 680px;
+  }
+  .section-heading em { font-style: italic; color: var(--white-dim); }
+
+  /* ── PERSONALITIES GRID ── */
+  .personalities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1px;
+    border: 1px solid var(--border);
+    background: var(--border);
+  }
+  .p-card {
+    background: var(--off-black);
+    padding: 40px 36px;
+    text-decoration: none;
+    color: inherit;
+    display: flex; flex-direction: column; gap: 16px;
+    transition: background 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .p-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .p-card:hover { background: var(--surface); }
+  .p-card:hover::before { opacity: 1; }
+  .p-card-number {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--white-faint);
+    letter-spacing: 0.1em;
+  }
+  .p-card-name {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--white);
+    letter-spacing: -0.01em;
+  }
+  .p-card-desc {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--white-dim);
+    line-height: 1.6;
+    flex: 1;
+  }
+  .p-card-files {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .file-pill {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--white-faint);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    letter-spacing: 0.05em;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .p-card:hover .file-pill {
+    border-color: var(--border-mid);
+    color: var(--white-dim);
+  }
+  .p-card-arrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--white-faint);
+    letter-spacing: 0.05em;
+    transition: color 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+  .p-card:hover .p-card-arrow { color: var(--white-dim); transform: translateX(4px); }
+
+  /* ── HOW IT WORKS ── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-top: 64px;
+  }
+  .step {
+    background: var(--off-black);
+    padding: 48px 40px;
+  }
+  .step-num {
+    font-family: var(--serif);
+    font-size: 72px;
+    font-weight: 300;
+    color: rgba(245,243,240,0.04);
+    line-height: 1;
+    margin-bottom: 24px;
+    letter-spacing: -0.03em;
+  }
+  .step-title {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--white);
+    letter-spacing: 0.02em;
+    margin-bottom: 16px;
+  }
+  .step-desc {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--white-dim);
+    line-height: 1.65;
+    margin-bottom: 20px;
+  }
+  .step .code-block {
+    font-size: 11px;
+    padding: 10px 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+  }
+
+  /* ── FILE ROLES ── */
+  .files-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px;
+    margin-top: 64px;
+  }
+  .file-role { border-top: 1px solid var(--border); padding-top: 32px; }
+  .file-role-name {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+  .file-role-desc {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--white-dim);
+    line-height: 1.7;
+  }
+
+  /* ── CONTRIBUTE ── */
+  .contribute {
+    border: 1px solid var(--border);
+    padding: 72px;
+    display: flex; justify-content: space-between; align-items: center; gap: 48px;
+    background: var(--surface);
+  }
+  .contribute-text h2 {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
+  .contribute-text p {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 300;
+    color: var(--white-dim);
+    max-width: 460px;
+    line-height: 1.65;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--white-faint);
+    letter-spacing: 0.02em;
+  }
+  .footer-links { display: flex; gap: 28px; }
+  .footer-links a {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--white-faint);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--white-dim); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .hero { padding: 0 24px 64px; }
+    section { padding: 72px 24px; }
+    .section-divider { margin: 0 24px; }
+    .steps { grid-template-columns: 1fr; }
+    .files-grid { grid-template-columns: 1fr; gap: 32px; }
+    .contribute { flex-direction: column; padding: 48px 32px; }
+    footer { flex-direction: column; gap: 24px; align-items: flex-start; padding: 32px 24px; }
+    .personalities-grid { grid-template-columns: 1fr; }
+    .hero-line { display: none; }
+  }
+  @media (max-width: 600px) {
+    .hero h1 { letter-spacing: -0.03em; }
+    .hero-actions { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .nav-links { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">PSYCHON</a>
+  <div class="nav-links">
+    <a href="https://github.com/Callixen/PSYCHON" target="_blank">GitHub</a>
+    <a href="https://docs.openclaw.ai" target="_blank">Docs</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-line"></div>
+  <div class="hero-eyebrow">OpenClaw · Agent templates</div>
+  <h1>The OpenClaw agent personality archive.</h1>
+  <p class="hero-sub">SOUL.md, USER.md, and RULES.md templates for every kind of agent — opinionated, production-ready, and growing. Built by Callixen.</p>
+  <div class="hero-actions">
+    <a class="btn-primary" href="https://github.com/Callixen/PSYCHON" target="_blank">
+      View on GitHub ↗
+    </a>
+    <a class="btn-secondary" href="https://docs.openclaw.ai" target="_blank">Read the docs</a>
+  </div>
+  <div class="hero-code">
+    <div class="code-block">
+      <span>$</span>cp -r PSYCHON/developer/* ~/.openclaw/workspace/
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PERSONALITIES -->
+<section>
+  <div class="section-label">Personalities</div>
+  <h2 class="section-heading fade-in">Five personalities.<br><em>Pick one and customise.</em></h2>
+
+  <div class="personalities-grid fade-in">
+
+    <a class="p-card" href="https://github.com/Callixen/PSYCHON/tree/main/developer" target="_blank">
+      <div class="p-card-number">01</div>
+      <div class="p-card-name">developer</div>
+      <p class="p-card-desc">Code-first assistant. Opinionated on stack, strict about secrets and destructive commands. Writes clean commits and says when the architecture is getting messy.</p>
+      <div class="p-card-files">
+        <span class="file-pill">SOUL.md</span>
+        <span class="file-pill">USER.md</span>
+        <span class="file-pill">RULES.md</span>
+      </div>
+      <span class="p-card-arrow">→ View files</span>
+    </a>
+
+    <a class="p-card" href="https://github.com/Callixen/PSYCHON/tree/main/osint" target="_blank">
+      <div class="p-card-number">02</div>
+      <div class="p-card-name">osint</div>
+      <p class="p-card-desc">Intelligence analyst. Every claim gets a confidence level. Hard privacy guardrails built in. Finds signal in noise, never amplifies unverified claims.</p>
+      <div class="p-card-files">
+        <span class="file-pill">SOUL.md</span>
+        <span class="file-pill">USER.md</span>
+        <span class="file-pill">RULES.md</span>
+      </div>
+      <span class="p-card-arrow">→ View files</span>
+    </a>
+
+    <a class="p-card" href="https://github.com/Callixen/PSYCHON/tree/main/creative-writer" target="_blank">
+      <div class="p-card-number">03</div>
+      <div class="p-card-name">creative-writer</div>
+      <p class="p-card-desc">Writing collaborator that matches your voice and gives honest feedback. Never rewrites what you didn't ask it to touch. Serves the work, not itself.</p>
+      <div class="p-card-files">
+        <span class="file-pill">SOUL.md</span>
+        <span class="file-pill">USER.md</span>
+        <span class="file-pill">RULES.md</span>
+      </div>
+      <span class="p-card-arrow">→ View files</span>
+    </a>
+
+    <a class="p-card" href="https://github.com/Callixen/PSYCHON/tree/main/finance-tracker" target="_blank">
+      <div class="p-card-number">04</div>
+      <div class="p-card-name">finance-tracker</div>
+      <p class="p-card-desc">Financial agent. Precise, non-judgmental, fraud-alert ready. Never initiates a payment without session-specific confirmation. Reports what the numbers say.</p>
+      <div class="p-card-files">
+        <span class="file-pill">SOUL.md</span>
+        <span class="file-pill">USER.md</span>
+        <span class="file-pill">RULES.md</span>
+      </div>
+      <span class="p-card-arrow">→ View files</span>
+    </a>
+
+    <a class="p-card" href="https://github.com/Callixen/PSYCHON/tree/main/autonomous-agent" target="_blank">
+      <div class="p-card-number">05</div>
+      <div class="p-card-name">autonomous-agent</div>
+      <p class="p-card-desc">Fully autonomous operator agent. Builder mentality, public accountability, explicit prompt injection defences. Real infra. Real consequences. Moves deliberately.</p>
+      <div class="p-card-files">
+        <span class="file-pill">SOUL.md</span>
+        <span class="file-pill">USER.md</span>
+        <span class="file-pill">RULES.md</span>
+      </div>
+      <span class="p-card-arrow">→ View files</span>
+    </a>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- HOW IT WORKS -->
+<section>
+  <div class="section-label">Setup</div>
+  <h2 class="section-heading fade-in">Up and running<br><em>in three steps.</em></h2>
+
+  <div class="steps fade-in">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-title">Clone the repo</div>
+      <p class="step-desc">Pull the kit down from GitHub. No install required — it's just markdown files.</p>
+      <div class="code-block"><span>$</span>git clone github.com/Callixen/PSYCHON</div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-title">Copy your personality</div>
+      <p class="step-desc">Pick the folder that fits your use case and copy it into your OpenClaw workspace.</p>
+      <div class="code-block"><span>$</span>cp -r PSYCHON/developer/* ~/.openclaw/workspace/</div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-title">Fill in USER.md</div>
+      <p class="step-desc">Add your name, project context, and preferences. Start your agent. It reads these files on session start.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- FILE ROLES -->
+<section>
+  <div class="section-label">Structure</div>
+  <h2 class="section-heading fade-in">Three files.<br><em>One complete agent.</em></h2>
+
+  <div class="files-grid fade-in">
+    <div class="file-role">
+      <div class="file-role-name">SOUL.md</div>
+      <p class="file-role-desc">Identity and values. Who is this agent? What does it care about? How does it communicate? Loaded every session — it shapes everything the agent does. A bland soul produces a bland agent.</p>
+    </div>
+    <div class="file-role">
+      <div class="file-role-name">USER.md</div>
+      <p class="file-role-desc">Context about you. Your current project, your preferences, your tools, your communication style. The difference between an agent that gets you and one that makes you repeat yourself every session.</p>
+    </div>
+    <div class="file-role">
+      <div class="file-role-name">RULES.md</div>
+      <p class="file-role-desc">Hard constraints. Safety rules, secret handling, prompt injection defences. The agent treats these as authoritative — no chat message can override them. Non-negotiable, every personality.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CONTRIBUTE -->
+<section style="padding-top: 80px; padding-bottom: 80px;">
+  <div class="contribute fade-in">
+    <div class="contribute-text">
+      <h2>The archive grows.<br><em>Add to it.</em></h2>
+      <p>Open a PR. Every submission needs all three files and a clear use case. The one rule: SOUL.md must have genuine opinions, not platitudes.</p>
+    </div>
+    <a class="btn-primary" href="https://github.com/Callixen/PSYCHON" target="_blank">
+      Contribute on GitHub ↗
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">PSYCHON</span>
+  <div class="footer-links">
+    <a href="https://github.com/Callixen/PSYCHON" target="_blank">GitHub</a>
+    <a href="https://docs.openclaw.ai" target="_blank">OpenClaw docs</a>
+    <a href="https://github.com/Callixen/PSYCHON/blob/main/LICENSE" target="_blank">MIT License</a>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
